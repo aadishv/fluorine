@@ -3,7 +3,7 @@ import { v } from "convex/values";
 import { internal } from "./_generated/api";
 import { query, mutation, internalMutation, internalQuery } from "./_generated/server";
 
-// Check if user has remaining requests for today
+
 export const checkDailyLimit = query({
   args: {},
   returns: v.object({
@@ -16,7 +16,7 @@ export const checkDailyLimit = query({
       return { remainingRequests: 0, hasAccess: false };
     }
 
-    const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    const today = new Date().toISOString().split('T')[0];
     const dailyLimit = await ctx.db
       .query("userDailyLimits")
       .withIndex("by_user_date", (q) => q.eq("userId", userId).eq("date", today))
@@ -32,7 +32,7 @@ export const checkDailyLimit = query({
   },
 });
 
-// Submit a fact-checking request
+
 export const submitFactCheck = mutation({
   args: { url: v.string() },
   returns: v.id("factCheckRequests"),
@@ -42,7 +42,7 @@ export const submitFactCheck = mutation({
       throw new Error("Authentication required");
     }
 
-    // Check daily limit
+
     const today = new Date().toISOString().split('T')[0];
     const dailyLimit = await ctx.db
       .query("userDailyLimits")
@@ -54,7 +54,7 @@ export const submitFactCheck = mutation({
       throw new Error("Daily limit of 20 requests exceeded");
     }
 
-    // Update or create daily limit record
+
     if (dailyLimit) {
       await ctx.db.patch(dailyLimit._id, { requestCount: used + 1 });
     } else {
@@ -65,14 +65,14 @@ export const submitFactCheck = mutation({
       });
     }
 
-    // Create fact-check request
+
     const requestId = await ctx.db.insert("factCheckRequests", {
       userId,
       url: args.url,
       status: "pending",
     });
 
-    // Schedule the fact-checking process
+
     await ctx.scheduler.runAfter(0, internal.factCheckInternal.processFactCheck, {
       requestId,
     });
@@ -81,7 +81,7 @@ export const submitFactCheck = mutation({
   },
 });
 
-// Get fact-check result
+
 export const getFactCheckResult = query({
   args: { requestId: v.id("factCheckRequests") },
   returns: v.union(
@@ -127,7 +127,7 @@ export const getFactCheckResult = query({
 });
 
 
-// Internal function to get request details
+
 export const getRequest = internalQuery({
   args: { requestId: v.id("factCheckRequests") },
   returns: v.union(
@@ -148,7 +148,7 @@ export const getRequest = internalQuery({
   },
 });
 
-// Internal function to update request
+
 export const updateRequest = internalMutation({
   args: {
     requestId: v.id("factCheckRequests"),

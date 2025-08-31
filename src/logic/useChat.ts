@@ -59,7 +59,7 @@ const tools = {
 export type uiTool = ToolUIPart<InferUITools<typeof tools>>;
 
 const useChat = () => {
-  // file stuff
+
   const [files, setFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previews, setPreviews] = useState<string[]>([]);
@@ -111,9 +111,9 @@ const useChat = () => {
       }
     },
   };
-  // scroll
+
   const inputContainerRef = useRef<HTMLDivElement>(null);
-  // chat stuff
+
   const [prompt, setPrompt] = useState<string>("");
 
   const chat = useChatInternal({
@@ -156,7 +156,7 @@ const useChat = () => {
       };
 
       reader.onerror = () => {
-        reader.abort(); // Optional: Abort the reading process on error.
+        reader.abort();
         reject(Error("Error occurred"));
       };
 

@@ -30,7 +30,7 @@
   --secondary: oklch(0.9006 0 0);
   --secondary-foreground: oklch(0 0 0);
   --muted: oklch(1 0 0);
-  --muted-foreground: #00000;
+  --muted-foreground: gray;
   --accent: rgba(235.01, 234.99, 236.1);
   --accent-foreground: rgba(0, 0, 0);
   --destructive: oklch(0.6368 0.2078 25.3313);
