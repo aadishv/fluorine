@@ -16,6 +16,7 @@ import type {
 import type * as auth from "../auth.js";
 import type * as authFunctions from "../authFunctions.js";
 import type * as factCheck from "../factCheck.js";
+import type * as factCheckInternal from "../factCheckInternal.js";
 import type * as http from "../http.js";
 
 /**
@@ -30,6 +31,7 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   authFunctions: typeof authFunctions;
   factCheck: typeof factCheck;
+  factCheckInternal: typeof factCheckInternal;
   http: typeof http;
 }>;
 export declare const api: FilterApi<

@@ -14,8 +14,8 @@ export default defineSchema({
     result: v.optional(v.string()),
     authenticityScore: v.optional(v.number()),
     status: v.union(v.literal("pending"), v.literal("completed"), v.literal("failed")),
-  }).index("by_user", ["userId"]).index("by_user_date", ["userId", "_creationTime"]),
-  
+  }).index("by_user", ["userId"]),
+
   userDailyLimits: defineTable({
     userId: v.id("users"),
     date: v.string(), // YYYY-MM-DD format
