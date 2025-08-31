@@ -9,6 +9,7 @@ import api from "./cvx";
 import { useQuery } from "convex/react";
 import { useState, useEffect } from "react";
 import FactChecker from "./components/FactChecker";
+import FactCheckerDemo from "./components/FactCheckerDemo";
 
 function NotFound() {
   const [count, setCount] = useState(3);
@@ -45,8 +46,31 @@ function NotFound() {
 }
 
 function App() {
-  const { viewer, image } = useQuery(api.authFunctions.getUser) ?? {};
+  const userQuery = useQuery(api.authFunctions.getUser);
   const { signOut } = useAuthActions();
+  
+  // Check if Convex is properly configured
+  const isConvexConfigured = userQuery !== undefined;
+  const { viewer, image } = userQuery ?? {};
+
+  if (!isConvexConfigured) {
+    // Show demo version when Convex is not configured
+    return (
+      <div className="min-h-screen">
+        <div className="top-0 right-0 backdrop-blur-sm h-15 bg-white z-50 w-full fixed px-2 py-2 flex gap-5">
+          <span className="font-serif my-auto ml-2 mr-auto text-3xl">
+            Fact Checker (Demo)
+          </span>
+          <div className="flex">
+            <p className="ml-2 my-auto">Demo Mode</p>
+          </div>
+        </div>
+        <div className="mt-15">
+          <FactCheckerDemo />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <ProviderWrapper>
