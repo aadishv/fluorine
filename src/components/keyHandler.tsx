@@ -13,26 +13,22 @@ import { Key } from "lucide-react";
 import { Input } from "./ui/input";
 
 const useKeyHandler = () => {
-  // API key dialog state
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [showDialog, setShowDialog] = useState(false);
   const [editValue, setEditValue] = useState("");
 
-  // Check for API key on mount
   useEffect(() => {
     const key = getApiKey();
     setApiKey(key);
     if (!key) setShowDialog(true);
   }, []);
 
-  // Save API key to localStorage
   function saveApiKey(newKey: string) {
     window.localStorage.setItem("apiKey", newKey);
     setApiKey(newKey);
     setShowDialog(false);
   }
 
-  // Open dialog from key icon
   function openDialog() {
     setEditValue(apiKey ?? "");
     setShowDialog(true);

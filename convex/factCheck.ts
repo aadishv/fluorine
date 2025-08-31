@@ -153,14 +153,12 @@ export const updateRequest = internalMutation({
   args: {
     requestId: v.id("factCheckRequests"),
     result: v.string(),
-    authenticityScore: v.number(),
     status: v.union(v.literal("completed"), v.literal("failed")),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
     await ctx.db.patch(args.requestId, {
       result: args.result,
-      authenticityScore: args.authenticityScore,
       status: args.status,
     });
     return null;

@@ -12,6 +12,7 @@ export default defineSchema({
     userId: v.id("users"),
     url: v.string(),
     result: v.optional(v.string()),
+    // DEPRECATED
     authenticityScore: v.optional(v.number()),
     status: v.union(v.literal("pending"), v.literal("completed"), v.literal("failed")),
   }).index("by_user", ["userId"]),

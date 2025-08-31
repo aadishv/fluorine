@@ -77,8 +77,6 @@ export const processFactCheck = internalAction({
         apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY!,
       });
 
-      let authenticityScore = 50;
-
       const result = streamText({
         model: genAI("gemini-2.5-flash-lite"),
         messages: [
@@ -148,17 +146,6 @@ export const processFactCheck = internalAction({
       for await (const chunk of result.textStream) {
         fullText += chunk;
       }
-      console.log("here2");
-
-      for await (const part of result.fullStream) {
-        if (
-          part.type === "tool-call" &&
-          part.toolName === "setAuthenticityScore"
-        ) {
-          authenticityScore = (part as any).args.score;
-        }
-      }
-      console.log("here");
       const metadata = (await result.providerMetadata) as GoogleGenerativeAIProviderMetadata | undefined;
       const groundingMetadata = metadata?.groundingMetadata;
       console.log(groundingMetadata);
@@ -167,7 +154,6 @@ export const processFactCheck = internalAction({
       await ctx.runMutation(internal.factCheck.updateRequest, {
         requestId: args.requestId,
         result: fullText,
-        authenticityScore,
         status: "completed",
       });
     } catch (error) {
@@ -175,7 +161,6 @@ export const processFactCheck = internalAction({
       await ctx.runMutation(internal.factCheck.updateRequest, {
         requestId: args.requestId,
         result: `Error: ${error instanceof Error ? error.message : "Unknown error"}`,
-        authenticityScore: 0,
         status: "failed",
       });
     }

@@ -16,7 +16,6 @@ import {
   CheckCircle,
   XCircle,
 } from "lucide-react";
-import Speedometer from "./Speedometer";
 import ReactMarkdown from "react-markdown";
 import { useQuery, useMutation } from "convex/react";
 import api from "../cvx";
@@ -29,16 +28,13 @@ export default function FactChecker() {
     useState<Id<"factCheckRequests"> | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Get user's daily limit info
   const dailyLimit = useQuery(api.factCheck.checkDailyLimit);
 
-  // Get fact-check result if we have a request ID
   const factCheckResult = useQuery(
     api.factCheck.getFactCheckResult,
     currentRequestId ? { requestId: currentRequestId } : "skip",
   );
 
-  // Submit fact-check mutation
   const submitFactCheck = useMutation(api.factCheck.submitFactCheck);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -49,7 +45,7 @@ export default function FactChecker() {
       return;
     }
 
-    // Basic URL validation
+
     try {
       new URL(url);
     } catch {
@@ -211,11 +207,6 @@ export default function FactChecker() {
 
               {factCheckResult.status === "completed" && (
                 <div className="space-y-6">
-                  {/* Authenticity Score */}
-                  <div className="flex justify-center">
-                    <Speedometer score={factCheckResult.authenticityScore} />
-                  </div>
-
                   {/* Analysis Results */}
                   <div className="prose max-w-none">
                     <h3 className="text-lg font-semibold mb-3">

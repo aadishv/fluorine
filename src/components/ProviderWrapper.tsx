@@ -8,7 +8,7 @@ import { Button } from "./ui/button";
 import { GoogleLogo, GitHubLogo } from "./logos";
 
 import { ReactNode } from "react";
-import { NuqsAdapter } from "nuqs/adapters/react"; // For plain React SPAs
+import { NuqsAdapter } from "nuqs/adapters/react"
 
 import { Toaster } from "sonner";
 

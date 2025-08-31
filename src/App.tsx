@@ -48,7 +48,6 @@ function App() {
   const userQuery = useQuery(api.authFunctions.getUser);
   const { signOut } = useAuthActions();
 
-  // Check if Convex is properly configured
   const { viewer, image } = userQuery ?? {};
 
   return (
