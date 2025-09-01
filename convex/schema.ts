@@ -2,9 +2,6 @@ import { defineSchema, defineTable } from "convex/server";
 import { authTables } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 
-
-
-
 export default defineSchema({
   ...authTables,
 
@@ -14,7 +11,11 @@ export default defineSchema({
     result: v.optional(v.string()),
     // DEPRECATED
     authenticityScore: v.optional(v.number()),
-    status: v.union(v.literal("pending"), v.literal("completed"), v.literal("failed")),
+    status: v.union(
+      v.literal("pending"),
+      v.literal("completed"),
+      v.literal("failed"),
+    ),
   }).index("by_user", ["userId"]),
 
   userDailyLimits: defineTable({

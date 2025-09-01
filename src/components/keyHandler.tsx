@@ -78,22 +78,20 @@ const useKeyHandler = () => {
         </DialogContent>
       </Dialog>
     ),
-    prompt: (
-      !apiKey && (
-        <div className="flex flex-col items-center justify-center h-[30vh]">
-          <div className="bg-white border border-gray-200 rounded-xl shadow-md p-6 flex flex-col gap-3 items-center">
-            <Key className="w-8 h-8 mb-2 text-primary" />
-            <div className="font-semibold text-lg">API Key Required</div>
-            <div className="text-gray-600 text-sm mb-2 text-center">
-              Please enter your API key to use the app.
-            </div>
-            <Button variant="fancy" onClick={openDialog}>
-              Enter API Key
-            </Button>
+    prompt: !apiKey && (
+      <div className="flex flex-col items-center justify-center h-[30vh]">
+        <div className="bg-white border border-gray-200 rounded-xl shadow-md p-6 flex flex-col gap-3 items-center">
+          <Key className="w-8 h-8 mb-2 text-primary" />
+          <div className="font-semibold text-lg">API Key Required</div>
+          <div className="text-gray-600 text-sm mb-2 text-center">
+            Please enter your API key to use the app.
           </div>
+          <Button variant="fancy" onClick={openDialog}>
+            Enter API Key
+          </Button>
         </div>
-      )
-    )
+      </div>
+    ),
   } as const;
 };
 

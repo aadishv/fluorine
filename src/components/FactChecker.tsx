@@ -1,23 +1,8 @@
 import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
 import { Badge } from "./ui/badge";
-import {
-  Loader2,
-  ExternalLink,
-  AlertCircle,
-  CheckCircle,
-  XCircle,
-  ArrowRight,
-  ArrowLeft,
-} from "lucide-react";
+import { Loader2, AlertCircle, ArrowRight, ArrowLeft } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useQuery, useMutation } from "convex/react";
 import api from "../cvx";
@@ -129,7 +114,11 @@ function CheckView(props: { check: Infer<typeof factCheckValidator> }) {
   const [_, setReq] = useReq();
   return (
     <>
-      <Button onClick={() => void setReq(null)} variant="ghost" className="mb-5">
+      <Button
+        onClick={() => void setReq(null)}
+        variant="ghost"
+        className="mb-5"
+      >
         <ArrowLeft />
       </Button>
       <div className="p-5 rounded-xl bg-white/50">

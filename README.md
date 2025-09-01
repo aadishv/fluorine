@@ -4,23 +4,23 @@ A web application that verifies the authenticity of social media posts using AI 
 
 ## Key Features
 
-* **Authentication Required**: Sign in to get access to fact-checking services
-* **Daily Rate Limiting**: Users get 20 requests per day (ephemeral - resets on refresh)
-* **URL-Based Analysis**: Simply paste a social media post URL to fact-check
-* **AI-Powered Verification**: Uses Google Gemini 2.5 Flash with search grounding
-* **Visual Authenticity Score**: Displays results with a speedometer interface (0-100)
-* **Comprehensive Analysis**: Extracts and analyzes both text content and images
-* **Streaming Results**: Real-time display of fact-checking results
+- **Authentication Required**: Sign in to get access to fact-checking services
+- **Daily Rate Limiting**: Users get 20 requests per day (ephemeral - resets on refresh)
+- **URL-Based Analysis**: Simply paste a social media post URL to fact-check
+- **AI-Powered Verification**: Uses Google Gemini 2.5 Flash with search grounding
+- **Visual Authenticity Score**: Displays results with a speedometer interface (0-100)
+- **Comprehensive Analysis**: Extracts and analyzes both text content and images
+- **Streaming Results**: Real-time display of fact-checking results
 
 ## Technologies
 
-* **Convex** for the backend with real-time capabilities
-* **React + Vite** for the frontend
-* **Tailwind + shadcn** for styling
-* **Convex Auth** for authentication (Google/GitHub)
-* **Google Gemini AI** for fact-checking analysis
-* **Vercel AI SDK** for streaming AI responses
-* **r.jina.ai** for extracting readable content from social media posts
+- **Convex** for the backend with real-time capabilities
+- **React + Vite** for the frontend
+- **Tailwind + shadcn** for styling
+- **Convex Auth** for authentication (Google/GitHub)
+- **Google Gemini AI** for fact-checking analysis
+- **Vercel AI SDK** for streaming AI responses
+- **r.jina.ai** for extracting readable content from social media posts
 
 ## Environment Variables
 

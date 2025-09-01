@@ -1,7 +1,19 @@
-import { ChangeEvent, useState, ClipboardEvent, useEffect, useRef } from "react";
+import {
+  ChangeEvent,
+  useState,
+  ClipboardEvent,
+  useEffect,
+  useRef,
+} from "react";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { getApiKey } from "./getApiKey";
-import { convertToModelMessages, FileUIPart, streamText, ToolSet, ToolUIPart } from "ai";
+import {
+  convertToModelMessages,
+  FileUIPart,
+  streamText,
+  ToolSet,
+  ToolUIPart,
+} from "ai";
 import { toast } from "sonner";
 import { useChat as useChatInternal } from "@ai-sdk/react";
 import { z } from "zod";
@@ -59,7 +71,6 @@ const tools = {
 export type uiTool = ToolUIPart<InferUITools<typeof tools>>;
 
 const useChat = () => {
-
   const [files, setFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previews, setPreviews] = useState<string[]>([]);
@@ -79,14 +90,16 @@ const useChat = () => {
       type: "file",
       className: "hidden",
       onChange: (event: ChangeEvent<HTMLInputElement>) => {
-        const incoming = event.target.files ? Array.from(event.target.files) : [];
+        const incoming = event.target.files
+          ? Array.from(event.target.files)
+          : [];
         if (incoming.length > 0) {
-          setFiles(prev => [...prev, ...incoming]);
+          setFiles((prev) => [...prev, ...incoming]);
         }
       },
       accept: "image/*",
       multiple: true,
-      ref: fileInputRef
+      ref: fileInputRef,
     },
     triggerAddFile: () => {
       if (fileInputRef.current) {
@@ -162,7 +175,7 @@ const useChat = () => {
 
       reader.readAsDataURL(file);
     });
-  }
+  };
   const submit = async () => {
     if (!prompt) return;
     const mappedFiles = await Promise.all(files.map(fileToData));
@@ -170,24 +183,24 @@ const useChat = () => {
     setFiles([]);
     void chat.sendMessage({
       text: prompt,
-      files: files.map((file, i) => ({
-        type: 'file',
-        mediaType: file.type,
-        filename: file.name,
-        url: mappedFiles[i],
-      } as FileUIPart)),
+      files: files.map(
+        (file, i) =>
+          ({
+            type: "file",
+            mediaType: file.type,
+            filename: file.name,
+            url: mappedFiles[i],
+          }) as FileUIPart,
+      ),
     });
   };
-  useEffect(
-    () => {
-      inputContainerRef.current?.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-        inline: "start",
-      });
-    },
-    [chat.messages.length, chat.status, prompt]
-  )
+  useEffect(() => {
+    inputContainerRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+      inline: "start",
+    });
+  }, [chat.messages.length, chat.status, prompt]);
 
   return {
     submit,
@@ -211,7 +224,7 @@ const useChat = () => {
     files: filesObject,
     inputContainerOptions: {
       ref: inputContainerRef,
-    }
+    },
   } as const;
 };
 

@@ -1,16 +1,16 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 :root {
-    font-size: 20px;
+  font-size: 20px;
 }
 h1 {
-    @apply text-2xl font-serif;
+  @apply text-2xl font-serif;
 }
 h2 {
-    @apply text-xl font-serif;
+  @apply text-xl font-serif;
 }
 h3 {
-    @apply text-lg font-serif;
+  @apply text-lg font-serif;
 }
 @font-face {
   font-family: "Geist";

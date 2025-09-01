@@ -75,9 +75,7 @@ export default function Chat() {
 
   return (
     <div className="max-w-[50rem] w-full mx-auto flex flex-col h-[100vh-3.75rem] overflow-y-auto snap-y snap-mandatory">
-      <div
-        className="flex-1 px-1 snap-start"
-      >
+      <div className="flex-1 px-1 snap-start">
         {chat.messages.map((message) => (
           <div
             key={message.id}
@@ -90,8 +88,18 @@ export default function Chat() {
                     {part.text}
                   </Markdown>
                 );
-              } else if (part.type === 'file' && part.mediaType.startsWith('image/')) {
-                return <img key={part.url} className="h-20 rounded-xl mx-auto" src={part.url} alt="Generated image" />;
+              } else if (
+                part.type === "file" &&
+                part.mediaType.startsWith("image/")
+              ) {
+                return (
+                  <img
+                    key={part.url}
+                    className="h-20 rounded-xl mx-auto"
+                    src={part.url}
+                    alt="Generated image"
+                  />
+                );
               } else if (part?.type == "reasoning") {
                 return (
                   chat.isLoading && (
@@ -159,46 +167,49 @@ export default function Chat() {
         />
       </div>
       <div className="p-2 snap-end">
-      <div className="flex flex-col bg-secondary min-h-15 gap-2.5 p-2.5 rounded-4xl" {...chat.inputContainerOptions}>
-        <div className="flex">
-          <input {...chat.files.inputOptions} />
-          <Button
-            className="w-10 h-10"
-            onClick={chat.files.triggerAddFile}
-            variant="outline"
-          >
-            <Plus />
-          </Button>
-
-          <Input
-            className="!border-0 rounded-none !text-2xl placeholder:text-black/50"
-            onPaste={chat.files.handlePaste}
-            {...chat.inputOptions}
-          />
-          <Button className="w-10 h-10">
-            <ArrowUp />
-          </Button>
-        </div>
-        {chat.files.previews.length > 0 && (
-          <div className="ml-3 flex flex-wrap gap-2 overflow-x-auto items-center">
-            {chat.files.previews.map((src) => (
-              <img
-                key={src}
-                src={src}
-                className="h-15 rounded-md object-cover border"
-                loading="lazy"
-              />
-            ))}
+        <div
+          className="flex flex-col bg-secondary min-h-15 gap-2.5 p-2.5 rounded-4xl"
+          {...chat.inputContainerOptions}
+        >
+          <div className="flex">
+            <input {...chat.files.inputOptions} />
             <Button
-              variant="destructive"
-              className="h-10"
-              onClick={chat.files.clearFiles}
+              className="w-10 h-10"
+              onClick={chat.files.triggerAddFile}
+              variant="outline"
             >
-              Clear
+              <Plus />
+            </Button>
+
+            <Input
+              className="!border-0 rounded-none !text-2xl placeholder:text-black/50"
+              onPaste={chat.files.handlePaste}
+              {...chat.inputOptions}
+            />
+            <Button className="w-10 h-10">
+              <ArrowUp />
             </Button>
           </div>
-        )}
-      </div>
+          {chat.files.previews.length > 0 && (
+            <div className="ml-3 flex flex-wrap gap-2 overflow-x-auto items-center">
+              {chat.files.previews.map((src) => (
+                <img
+                  key={src}
+                  src={src}
+                  className="h-15 rounded-md object-cover border"
+                  loading="lazy"
+                />
+              ))}
+              <Button
+                variant="destructive"
+                className="h-10"
+                onClick={chat.files.clearFiles}
+              >
+                Clear
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

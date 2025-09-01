@@ -2,12 +2,8 @@
 
 import { internalAction } from "./_generated/server";
 import { v } from "convex/values";
-import { generateText, streamText, tool } from "ai";
-import {
-  createGoogleGenerativeAI,
-  google,
-  GoogleGenerativeAIProviderMetadata,
-} from "@ai-sdk/google";
+import { generateText } from "ai";
+import { createGoogleGenerativeAI, google } from "@ai-sdk/google";
 import { internal } from "./_generated/api";
 
 const system = `Provided is a social media post. Please research + analyze it and provide detailed analysis with a final score.
