@@ -52,10 +52,10 @@ function App() {
 
   return (
     <ProviderWrapper>
-      <div className="top-0 right-0 h-15  z-50 w-full fixed px-2 py-2 flex gap-5">
-        <span className="font-serif my-auto ml-2 mr-auto text-3xl">
+      <div className="top-0 right-0 h-15 z-50 w-full fixed px-2 py-2 flex gap-5 bg-white/50">
+        <a className="font-serif my-auto ml-2 mr-auto text-3xl" href="/">
           Fluorine
-        </span>
+        </a>
         <div className="flex">
           {image && (
             <img
@@ -74,7 +74,7 @@ function App() {
           Sign out
         </Button>
       </div>
-      <div className="mt-15">
+      <div className="mt-17 z-0 min-h-full overflow-y-scroll">
         <Switch>
           <Route path="/">
             <FactChecker />
