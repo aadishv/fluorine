@@ -5,7 +5,7 @@ const queryClient = new QueryClient();
 import { useAuthActions } from "@convex-dev/auth/react";
 import { Authenticated, Unauthenticated } from "convex/react";
 import { Button } from "./ui/button";
-import { GoogleLogo, GitHubLogo } from "./logos";
+import { GoogleLogo } from "./logos";
 
 import { ReactNode } from "react";
 import { NuqsAdapter } from "nuqs/adapters/react";
