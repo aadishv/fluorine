@@ -243,14 +243,14 @@ export default function FactChecker() {
         {!req && (
           <>
             <PromptBar />
-            {history && history.length && (
+            {(history && history.length) ? (
               <>
                 <h2 className="text-xl font-serif">History</h2>
                 {history.map((item) => (
                   <CheckPreview check={item} />
                 ))}
               </>
-            )}
+            ) : <></>}
           </>
         )}
         {req && check && <CheckView check={check} />}

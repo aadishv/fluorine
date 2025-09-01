@@ -33,13 +33,6 @@ export default function ProviderWrapper({ children }: { children: ReactNode }) {
           >
             <GoogleLogo className="mr-2 h-4 w-4" /> Sign in with Google
           </Button>
-          <Button
-            variant="default"
-            type="button"
-            onClick={() => void signIn("github")}
-          >
-            <GitHubLogo className="mr-2 h-4 w-4" /> Sign in with Github
-          </Button>
         </div>
       </Unauthenticated>
     </main>
