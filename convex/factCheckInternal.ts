@@ -2,11 +2,47 @@
 
 import { internalAction } from "./_generated/server";
 import { v } from "convex/values";
-import { streamText, tool } from "ai";
-import { createGoogleGenerativeAI, google, GoogleGenerativeAIProviderMetadata } from "@ai-sdk/google";
+import { generateText, streamText, tool } from "ai";
+import {
+  createGoogleGenerativeAI,
+  google,
+  GoogleGenerativeAIProviderMetadata,
+} from "@ai-sdk/google";
 import { internal } from "./_generated/api";
-import { z } from "zod";
 
+const system = `Provided is a social media post. Please research + analyze it and provide detailed analysis with a final score.
+BE EXTREMELY CRITICAL. Take the following into account:
+1. Is it a scam? (authenticity)
+2. Is it a genuine claim? Is it technically correct? (truth)
+
+Examples:
+* Post by fake Mark Zuckerberg account - score is decreased on grounds of authenticity. Score: Fake scam.
+* Post by Meta that it invented the metaverse - score is decreased on grounds of truth. Score: False claim.
+* Post by a Meta moderator that the platform is free of misinformation - score is decreased on grounds of truth. Score: False claim.
+
+**Posts that contain ANY verifiable falsehoods or factual falsities should definitely have a very low score**; and further reductions may be made for severity or repeated false claims. Slight reductions can be made for subjective topics, controversial areas, or personal opinions.
+
+Provide a flowing response for a detailed analysis that doesn't sound robotic. Adopt a conversational tone yet remain very concise. Focus on the notable falsities; parts of the claim that are true should NOT be noted.
+
+Consider your role as protecting users from misinformation; if you are too wordy, users might skip the important parts, and you'll have failed. If you assign too high or lenient of a score, users might think the entire post is correct. Keep this purpose in mind. Based on this, avoid focusing on true aspects; attempt to condense them down into a single point about "What the author is right about" or similar.
+
+Include a note on how to proceed. For example: "Proceed with caution regarding Mark's claims and stay conscient of misinformation on the metaverse."
+
+Example analysis:
+"""
+# **Scam**
+## Proceed with extreme caution.
+
+This is not a real post from Mark Zuckerberg.
+
+* The username is different...
+* The claim made, that Meta is giving away 20 bitcoin for free at scam.com, is a false statement. **Do not click on the link** as it is likely scam...
+* ...
+"""
+**ALWAYS follow the above structure. Heading 1 for score -> heading 2 for note -> brief TL;DR -> bullet point details.**
+
+Don't worry about citing sources in your text response; we'll handle that (of course, make sure your response is still informed by sources). Use your provided search tool to find and read sources before coming to a conclusion.
+`;
 
 function extractImageUrls(markdown: string): string[] {
   const imageRegex = /!\[.*?\]\((https?:\/\/[^\s)]+)\)/g;
@@ -22,30 +58,6 @@ function extractImageUrls(markdown: string): string[] {
   return urls;
 }
 
-const system = `Provided is a social media post. Please analyze it for authenticity (is it a scam?) and truth (is it correct?). Provide detailed analysis including:
-
-1. Verification of key claims made in the post
-2. Cross-reference with reliable sources
-3. Identification of any misleading or false information
-4. Overall assessment of credibility
-5. Call the provided tool to set the final authenticity score from 0-100 (0 = completely false, 100 = completely true). ALWAYS call this at the end of your turn.
-
-Provide a flowing response that doesn't sound robotic. Use ELI5 techniques and adopt a conversational tone. (Of course, avoid mentioning this to the user; make sure they are comfortable.)
-
-Example response format (using fake names, of course):
-
-"""
-This post by X posits that Z is worth more than Y, which is **not true**. Here's the breakdown:
-* X previously mentioned that Y is worth more for K's business than Z, which is not true based on News Outlet's reporting.
-* Importantly, **recent financial results showed that Z's value was significantly lower than Y's**.
-* While K is betting on Z's success, it's important to note that Y has a proven track record in the industry.
-Final truthfulness verdict: **the post is authentic, but awaits verification of X's claim that Z is worth more than Y.**
-"""
-
-Here's the content to fact-check:
-`;
-
-
 export const processFactCheck = internalAction({
   args: { requestId: v.id("factCheckRequests") },
   returns: v.null(),
@@ -55,10 +67,17 @@ export const processFactCheck = internalAction({
         requestId: args.requestId,
       });
 
+      // await new Promise(resolve => setTimeout(resolve, 500000));
+      // await ctx.runMutation(internal.factCheck.updateRequest, {
+      //   requestId: args.requestId,
+      //   result: "Testing mode - simulated failure",
+      //   status: "failed",
+      // });
+      // return null;
+
       if (!request) {
         throw new Error("Request not found");
       }
-
 
       const jinaUrl = `https://r.jina.ai/${request.url}`;
       const response = await fetch(jinaUrl);
@@ -68,24 +87,21 @@ export const processFactCheck = internalAction({
       }
 
       const content = await response.text();
-      console.log(content);
-
-      const imageUrls = extractImageUrls(content);
-      console.log("here6");
 
       const genAI = createGoogleGenerativeAI({
         apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY!,
       });
-
-      const result = streamText({
-        model: genAI("gemini-2.5-flash-lite"),
+      const imageUrls = extractImageUrls(content);
+      const result = await generateText({
+        // TODO: switch to flash for prod (?)
+        model: genAI("gemini-2.5-flash"),
         messages: [
           {
             role: "user",
             content: [
               {
                 type: "text",
-                text: `${system} \n\n ${content}`,
+                text: content,
               },
               ...imageUrls.map((url) => ({
                 type: "image" as const,
@@ -95,62 +111,22 @@ export const processFactCheck = internalAction({
           },
         ],
         tools: {
-          setAuthenticityScore: tool({
-            description:
-              "Set the final authenticity score from 0-100 (0 = completely false, 100 = completely true). ALWAYS call this at the end of your turn.",
-            inputSchema: z.object({
-              score: z
-                .number()
-                .min(0)
-                .max(100)
-                .describe("Authenticity score from 0-100"),
-              reasoning: z.string().describe("Brief explanation for the score"),
-            }),
-            execute: async ({ score, reasoning }) => {
-              console.log("hi");
-              return `Score set to ${score}: ${reasoning}`;
-            },
-          }),
           google_search: google.tools.googleSearch({}),
         },
-        providerOptions: {
-          google: {
-            safetySettings: [
-              {
-                category: "HARM_CATEGORY_HARASSMENT",
-                threshold: "BLOCK_NONE",
-              },
-              {
-                category: "HARM_CATEGORY_HATE_SPEECH",
-                threshold: "BLOCK_NONE",
-              },
-              {
-                category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-                threshold: "BLOCK_NONE",
-              },
-              {
-                category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-                threshold: "BLOCK_NONE",
-              },
-            ],
-            generationConfig: {
-              candidateCount: 1,
-              maxOutputTokens: 2048,
-              temperature: 0.3,
-            },
-          },
-        },
+        system,
+        // stopWhen: stepCou
       });
-
-      let fullText = "";
-      for await (const chunk of result.textStream) {
-        fullText += chunk;
+      let fullText = result.text;
+      const chunks = (result.providerMetadata?.google?.groundingMetadata as any)
+        ?.groundingChunks as
+        | { web: { uri: string; title: string } }[]
+        | undefined;
+      if (chunks) {
+        fullText += "\n\n ## Sources";
+        fullText += chunks
+          .map((c, i) => `\n ${i + 1}. [${c.web.title}](${c.web.uri})`)
+          .join("");
       }
-      const metadata = (await result.providerMetadata) as GoogleGenerativeAIProviderMetadata | undefined;
-      const groundingMetadata = metadata?.groundingMetadata;
-      console.log(groundingMetadata);
-      console.log("here3");
-
       await ctx.runMutation(internal.factCheck.updateRequest, {
         requestId: args.requestId,
         result: fullText,
@@ -160,7 +136,7 @@ export const processFactCheck = internalAction({
       console.error("Fact-check processing failed:", error);
       await ctx.runMutation(internal.factCheck.updateRequest, {
         requestId: args.requestId,
-        result: `Error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        result: error instanceof Error ? error.message : null,
         status: "failed",
       });
     }

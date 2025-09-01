@@ -3,6 +3,19 @@ import { v } from "convex/values";
 import { internal } from "./_generated/api";
 import { query, mutation, internalMutation, internalQuery } from "./_generated/server";
 
+export const factCheckValidator = v.union(
+  v.object({
+    _id: v.id("factCheckRequests"),
+    _creationTime: v.number(),
+    result: v.optional(v.string()),
+    authenticityScore: v.optional(v.number()),
+    status: v.union(v.literal("pending"), v.literal("completed"), v.literal("failed")),
+    userId: v.id("users"),
+    url: v.string(),
+  }),
+  v.null()
+);
+
 
 export const checkDailyLimit = query({
   args: {},
@@ -81,23 +94,9 @@ export const submitFactCheck = mutation({
   },
 });
 
-
-export const getFactCheckResult = query({
+export const getFactCheck = query({
   args: { requestId: v.id("factCheckRequests") },
-  returns: v.union(
-    v.object({
-      status: v.literal("pending"),
-    }),
-    v.object({
-      status: v.literal("completed"),
-      result: v.string(),
-      authenticityScore: v.number(),
-    }),
-    v.object({
-      status: v.literal("failed"),
-      error: v.string(),
-    })
-  ),
+  returns: factCheckValidator,
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
@@ -105,24 +104,21 @@ export const getFactCheckResult = query({
     }
 
     const request = await ctx.db.get(args.requestId);
-    if (!request || request.userId !== userId) {
-      throw new Error("Request not found");
+    return request;
+  },
+});
+
+export const getUserFactChecks = query({
+  args: {  },
+  returns: v.array(factCheckValidator),
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) {
+      throw new Error("Authentication required");
     }
 
-    if (request.status === "pending") {
-      return { status: "pending" as const };
-    } else if (request.status === "completed") {
-      return {
-        status: "completed" as const,
-        result: request.result!,
-        authenticityScore: request.authenticityScore!,
-      };
-    } else {
-      return {
-        status: "failed" as const,
-        error: "Processing failed",
-      };
-    }
+    const request = await ctx.db.query("factCheckRequests").withIndex("by_user", q => q.eq("userId", userId)).order("desc").collect();
+    return request;
   },
 });
 
@@ -152,13 +148,13 @@ export const getRequest = internalQuery({
 export const updateRequest = internalMutation({
   args: {
     requestId: v.id("factCheckRequests"),
-    result: v.string(),
+    result: v.union(v.string(), v.null()),
     status: v.union(v.literal("completed"), v.literal("failed")),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
     await ctx.db.patch(args.requestId, {
-      result: args.result,
+      result: args.result ? args.result : undefined,
       status: args.status,
     });
     return null;

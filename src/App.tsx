@@ -52,9 +52,9 @@ function App() {
 
   return (
     <ProviderWrapper>
-      <div className="top-0 right-0 backdrop-blur-sm h-15  z-50 w-full fixed px-2 py-2 flex gap-5">
+      <div className="top-0 right-0 h-15  z-50 w-full fixed px-2 py-2 flex gap-5">
         <span className="font-serif my-auto ml-2 mr-auto text-3xl">
-          Flourine
+          Fluorine
         </span>
         <div className="flex">
           {image && (

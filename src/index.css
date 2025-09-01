@@ -1,6 +1,17 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-
+:root {
+    font-size: 20px;
+}
+h1 {
+    @apply text-2xl font-serif;
+}
+h2 {
+    @apply text-xl font-serif;
+}
+h3 {
+    @apply text-lg font-serif;
+}
 @font-face {
   font-family: "Geist";
   src: url("/Geist-Regular.woff2") format("woff2");
@@ -19,7 +30,7 @@
 
 @custom-variant dark (&:is(.dark *));
 :root {
-  --background: oklch(1 0 0);
+  --background: rgba(255, 255, 255, 0.5);
   --foreground: oklch(0.2161 0.0061 56.0434);
   --card: #fffff;
   --card-foreground: oklch(0 0 0);
@@ -178,4 +189,11 @@
 
 body {
   letter-spacing: var(--tracking-normal);
+}
+ul > li {
+  @apply list-disc list-inside ml-2;
+}
+
+ol > li {
+  @apply list-decimal list-inside ml-2;
 }
